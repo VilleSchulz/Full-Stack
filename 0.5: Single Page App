@@ -1,0 +1,4 @@
+browser -> server (POST)
+  https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+  Data type  : JSON
+JS code updated and new view shown
