@@ -1,7 +1,7 @@
-const Person =({ person }) => {
+const Person =({ person,number }) => {
   console.log(person)
   return(
- <div>{person}</div> 
+ <div>{person}:{number}</div> 
   )
 }
 
