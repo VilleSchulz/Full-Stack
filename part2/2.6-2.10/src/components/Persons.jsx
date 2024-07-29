@@ -1,4 +1,4 @@
-const Person =({ person,number, }) => {
+const Persons =({ person,number, }) => {
   console.log("Person",person)
   const personInfo= `${person}: ${number}`
   return(
@@ -6,4 +6,4 @@ const Person =({ person,number, }) => {
   )
 }
 
-export default Person
+export default Persons
