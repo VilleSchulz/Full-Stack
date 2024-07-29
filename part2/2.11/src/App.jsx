@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/Personform'
 import Persons from './components/Persons'
@@ -6,13 +7,27 @@ import Persons from './components/Persons'
 
 const App = () => {
 
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas',number :'040123345', id: 1}
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber]= useState('')
   const [filterData, setFilterData] = useState('')
+  
+  //get phonebook info from database
+  const hook = () => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  
+  useEffect(hook, [])
 
+  console.log('render',persons.length, 'persons')
+
+//handling new names and numbers
   const handleNewName = (event) => {
     console.log('added new name, ', event.target.value)
   setNewName(event.target.value)
@@ -21,6 +36,8 @@ const handleNewNumber = (event) =>{
   console.log('added new number, ', event.target.value)
   setNewNumber(event.target.value)
 }
+
+//adding new person info
 const addName = (event) => {
   event.preventDefault()
   const noteObject = {
