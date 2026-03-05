@@ -5,6 +5,7 @@ import PersonForm from './components/Personform'
 import Persons from './components/Persons'
 
 import phoneService from './services/numbers'
+import Notification from './components/Notification'
 
 
 const App = () => {
@@ -13,11 +14,21 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterData, setFilterData] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [notificationStyle, setNotificationStyle] = useState('')
 
 
   useEffect(() => {
     phoneService.getAll().then(initPersons => { setPersons(initPersons) }
-    )
+    ).catch(error => {
+      setNotificationStyle("error")
+      setNotification("Cannot get phonebooks " + error)
+
+      setTimeout(() => {
+        setNotification(null)
+
+      }, 3000)
+    })
   }, [])
 
   console.log('render', persons.length, 'persons')
@@ -49,17 +60,34 @@ const App = () => {
     if (existingPerson) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
         phoneService.update(existingPerson.id, noteObject).then(updatedPerson => { setPersons(persons.map(p => p.id !== updatedPerson.id ? p : updatedPerson)) })
+        setNotificationStyle("success")
+        setNotification(`Updated ${existingPerson.name}`)
+
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)
       }
 
     }
     else if (numberExists) {
-      alert(`${newNumber} is allready in a phonebook!`)
+      setNotificationStyle("error")
+      setNotification(`Number ${newNumber} already in phonebook`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+      return
     }
 
     else {
       phoneService.create(noteObject).then(createdPerson => {
         setPersons(persons.concat(createdPerson))
+        setNotificationStyle("success")
+        setNotification(`Added ${createdPerson.name}`)
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)
       })
+
 
     }
 
@@ -79,7 +107,27 @@ const App = () => {
     if (!window.confirm("Delete " + person.name + "?")) {
       return
     }
-    phoneService.remove(id).then(() => setPersons(persons.filter(p => p.id !== id)))
+    phoneService.remove(id).then(() => {
+      setPersons(persons.filter(p => p.id !== id))
+
+      setNotificationStyle("success")
+      setNotification(`Removed ${person.name}`)
+
+      setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+    }).catch(error => {
+
+      setNotificationStyle("error")
+      setNotification(`${person.name} has already been removed from server`)
+      setPersons(persons.filter(p => p.id !== id))
+      setTimeout(() => {
+        setNotification(null)
+      }, 3000)
+
+
+    })
+
 
 
   }
@@ -92,6 +140,7 @@ const App = () => {
         <Filter filterData={filterData} handleNewFilter={handleNewFilter} />
       </div>
       <h2>add a new</h2>
+      <Notification message={notification} styleClass={notificationStyle} />
 
       <PersonForm newName={newName}
         handleNewName={handleNewName}
