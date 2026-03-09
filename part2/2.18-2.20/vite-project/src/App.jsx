@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import countryService from './services/countries'
 import './App.css'
 import Country from './components/country'
+import weatherService from './services/weather'
 
 function App() {
   const [search, setSearch] = useState('')
@@ -24,12 +25,6 @@ function App() {
   useEffect(() => {
     const filtered = countries.filter(country => country.name?.common?.toLowerCase().includes(search.toLowerCase()))
     setCurrentCountries(filtered)
-    console.log("Current countries: " + currentCountries.map(c => c.name?.common))
-    console.log("All countries: " + countries.map(c => c.name?.common))
-    console.log("Filtered: " + filtered.map(c => c.name?.common))
-
-    console.log("Search: " + search)
-    console.log("Countries: " + countries.map(c => c.name?.common))
   }, [search, countries])
 
 
@@ -43,7 +38,7 @@ function App() {
             <p>No countries found</p> :
             currentCountries.length > 10 ?
               <p>Too many matches, please be more specific</p> :
-              <Country countryList={currentCountries} />
+              <Country countryList={currentCountries}/>
         }
       </div>
 
