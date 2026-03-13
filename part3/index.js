@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const PORT = 3001
-
+app.use(express.json())
 
 
 let persons = [
@@ -31,7 +31,11 @@ let persons = [
 
 
 ]
-
+const generateId = () => {
+    const maximumId = 10000000
+    const id = Math.floor(Math.random() * maximumId)
+    return String(id)
+}
 
 app.get('/api/persons', (req, res) => {
 
@@ -49,7 +53,49 @@ app.get('/api/info', (req, res) => {
 
 })
 
+app.get('/api/persons/:id', (req, res) => {
+    const id = req.params.id
+    const person = persons.find((p) => p.id === id)
+    if (!person) {
+        return res.status(404).end()
+    }
+    res.json(person)
+})
 
+app.delete('/api/persons/:id', (req, res) => {
+    const id = req.params.id
+    persons = persons.filter((p) => p.id !== id)
+    res.status(204).end()
+})
+
+app.post('/api/persons', (req, res) => {
+
+    const body = req.body
+
+    if (!body.name || !body.number) {
+        return res.status(400).json({
+            error: "name or number missing"
+        })
+    }
+
+    const personExists = persons.some((p) => p.name.toLowerCase() === body.name.toLowerCase())
+    if (personExists) {
+        return res.status(400).json({
+            error: "name must be unique"
+        })
+    }
+
+    const newPerson = {
+        id: generateId(),
+        name: body.name,
+        number: body.number
+    }
+
+    persons = persons.concat(newPerson)
+    res.json(newPerson)
+
+
+})
 
 app.listen(PORT, () => {
     console.log(`Server is runing on port ${PORT}`)
