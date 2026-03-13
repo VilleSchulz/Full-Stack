@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'https://full-stack-8ecz.onrender.com',
         changeOrigin: true
       }
     }
